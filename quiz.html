@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS Fundamentals Quiz</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        .answer-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .answer-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .answer-btn.correct {
+            background-color: #10B981 !important; /* Emerald-500 */
+            color: white !important;
+            border-color: #059669 !important;
+        }
+        .answer-btn.incorrect {
+            background-color: #EF4444 !important; /* Red-500 */
+            color: white !important;
+            border-color: #DC2626 !important;
+        }
+        /* Animation for screen transitions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="quiz-container w-full max-w-2xl mx-auto p-6 md:p-8">
+        
+        <!-- Start Screen -->
+        <div id="start-screen" class="text-center">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-2">CS Fundamentals Quiz</h1>
+            <p class="text-gray-600 mb-8">Test your knowledge on some core computer science topics.</p>
+            <button id="start-btn" class="w-full bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 duration-300">
+                Start Quiz
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="mb-6">
+                <p id="question-counter" class="text-sm font-medium text-gray-500">Question 1/10</p>
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold text-gray-900 mt-1">What is the question?</h2>
+            </div>
+            <div id="answer-buttons" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Answer buttons will be inserted here -->
+            </div>
+             <div id="feedback" class="mt-4 text-center h-6"></div>
+        </div>
+
+        <!-- Score Screen -->
+        <div id="score-screen" class="hidden text-center">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Quiz Complete!</h1>
+            <p class="text-gray-600 mb-6">Your final score is:</p>
+            <p id="final-score" class="text-6xl font-extrabold text-blue-600 mb-8">0/0</p>
+            <button id="restart-btn" class="w-full bg-gray-700 text-white font-bold py-3 px-6 rounded-lg hover:bg-gray-800 transition-colors duration-300">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Quiz Questions ---
+        const questions = [
+            {
+                question: "What does 'HTTP' stand for?",
+                answers: [
+                    { text: "HyperText Transfer Protocol", correct: true },
+                    { text: "HyperText Transmission Protocol", correct: false },
+                    { text: "High-Level Text Protocol", correct: false },
+                    { text: "Hyperlink Transfer Process", correct: false }
+                ]
+            },
+            {
+                question: "Which data structure operates on a Last-In, First-Out (LIFO) basis?",
+                answers: [
+                    { text: "Queue", correct: false },
+                    { text: "Linked List", correct: false },
+                    { text: "Stack", correct: true },
+                    { text: "Tree", correct: false }
+                ]
+            },
+            {
+                question: "In object-oriented programming, what is the concept of bundling data and methods that work on the data within one unit?",
+                answers: [
+                    { text: "Inheritance", correct: false },
+                    { text: "Encapsulation", correct: true },
+                    { text: "Polymorphism", correct: false },
+                    { text: "Abstraction", correct: false }
+                ]
+            },
+            {
+                question: "Which of these is NOT a primitive data type in JavaScript?",
+                answers: [
+                    { text: "Number", correct: false },
+                    { text: "String", correct: false },
+                    { text: "Boolean", correct: false },
+                    { text: "Array", correct: true }
+                ]
+            },
+            {
+                question: "What is the time complexity of a binary search algorithm?",
+                answers: [
+                    { text: "O(n)", correct: false },
+                    { text: "O(n^2)", correct: false },
+                    { text: "O(log n)", correct: true },
+                    { text: "O(1)", correct: false }
+                ]
+            }
+        ];
+
+        // --- DOM Elements ---
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const scoreScreen = document.getElementById('score-screen');
+        
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        const questionText = document.getElementById('question-text');
+        const questionCounter = document.getElementById('question-counter');
+        const answerButtons = document.getElementById('answer-buttons');
+        const feedbackEl = document.getElementById('feedback');
+        const finalScoreEl = document.getElementById('final-score');
+        
+        // --- State Variables ---
+        let currentQuestionIndex;
+        let score;
+
+        // --- Functions ---
+        const startQuiz = () => {
+            currentQuestionIndex = 0;
+            score = 0;
+            startScreen.classList.add('hidden');
+            scoreScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('fade-in');
+            setNextQuestion();
+        };
+
+        const setNextQuestion = () => {
+            resetState();
+            if (currentQuestionIndex < questions.length) {
+                showQuestion(questions[currentQuestionIndex]);
+            } else {
+                showScore();
+            }
+        };
+
+        const showQuestion = (question) => {
+            questionCounter.innerText = `Question ${currentQuestionIndex + 1}/${questions.length}`;
+            questionText.innerText = question.question;
+            question.answers.forEach(answer => {
+                const button = document.createElement('button');
+                button.innerText = answer.text;
+                button.classList.add('answer-btn', 'w-full', 'bg-gray-100', 'text-gray-800', 'font-semibold', 'py-3', 'px-4', 'rounded-lg', 'border', 'border-gray-300', 'hover:bg-gray-200');
+                if (answer.correct) {
+                    button.dataset.correct = answer.correct;
+                }
+                button.addEventListener('click', selectAnswer);
+                answerButtons.appendChild(button);
+            });
+        };
+
+        const resetState = () => {
+            feedbackEl.innerText = '';
+            while (answerButtons.firstChild) {
+                answerButtons.removeChild(answerButtons.firstChild);
+            }
+        };
+
+        const selectAnswer = (e) => {
+            const selectedBtn = e.target;
+            const isCorrect = selectedBtn.dataset.correct === 'true';
+
+            if (isCorrect) {
+                score++;
+                feedbackEl.innerText = "Correct!";
+                feedbackEl.classList.add('text-green-500');
+            } else {
+                feedbackEl.innerText = "Incorrect!";
+                feedbackEl.classList.add('text-red-500');
+            }
+
+            Array.from(answerButtons.children).forEach(button => {
+                if (button.dataset.correct === 'true') {
+                    button.classList.add('correct');
+                }
+                button.disabled = true;
+            });
+            
+            setTimeout(() => {
+                currentQuestionIndex++;
+                setNextQuestion();
+            }, 1500); // Wait 1.5 seconds before next question
+        };
+        
+        const showScore = () => {
+            quizScreen.classList.add('hidden');
+            scoreScreen.classList.remove('hidden');
+            scoreScreen.classList.add('fade-in');
+            finalScoreEl.innerText = `${score}/${questions.length}`;
+        };
+
+        // --- Event Listeners ---
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', startQuiz);
+    });
+    </script>
+
+</body>
+</html>

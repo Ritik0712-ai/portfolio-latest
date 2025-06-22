@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive To-Do List</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e5e7eb; /* Light gray background */
+        }
+        .task-item {
+            transition: all 0.3s ease;
+        }
+        .task-item.completed {
+            background-color: #d1fae5; /* Light green */
+            color: #6b7280;
+        }
+        .task-item.completed .task-text {
+            text-decoration: line-through;
+        }
+        /* Custom animation for adding items */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .new-task-animation {
+            animation: slideIn 0.4s ease-out;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-lg mx-auto bg-white rounded-xl shadow-2xl p-6">
+        
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-bold text-gray-800">My To-Do List</h1>
+            <p class="text-gray-500">Stay organized, get things done.</p>
+        </div>
+
+        <!-- Form for adding new tasks -->
+        <form id="add-task-form" class="flex gap-2 mb-4">
+            <input type="text" id="task-input" class="flex-grow border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Finish portfolio project" required>
+            <button type="submit" class="bg-blue-600 text-white font-semibold rounded-lg px-5 py-2 hover:bg-blue-700 transition-colors">
+                Add
+            </button>
+        </form>
+
+        <!-- Task List -->
+        <ul id="task-list" class="space-y-2">
+            <!-- Tasks will be dynamically inserted here -->
+        </ul>
+        
+        <!-- Empty State Message -->
+        <div id="empty-state" class="hidden text-center py-8">
+            <i class="fa-solid fa-clipboard-check text-4xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500 font-medium">All tasks completed!</p>
+            <p class="text-sm text-gray-400">Add a new task to get started.</p>
+        </div>
+
+        <!-- Footer with Task Count and Clear Button -->
+        <div id="task-footer" class="flex justify-between items-center mt-6 pt-4 border-t border-gray-200">
+             <p id="task-count" class="text-sm text-gray-500">0 tasks left</p>
+             <button id="clear-completed-btn" class="text-sm text-red-500 hover:text-red-700 font-medium transition-colors">Clear Completed</button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // DOM element references
+        const taskForm = document.getElementById('add-task-form');
+        const taskInput = document.getElementById('task-input');
+        const taskList = document.getElementById('task-list');
+        const taskCountEl = document.getElementById('task-count');
+        const clearCompletedBtn = document.getElementById('clear-completed-btn');
+        const emptyState = document.getElementById('empty-state');
+        const taskFooter = document.getElementById('task-footer'); // <-- FIX: Added this line
+
+        // Load tasks from local storage or initialize an empty array
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+        // --- Core Functions ---
+
+        // Function to save tasks to local storage
+        const saveTasks = () => {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        };
+
+        // Function to render all tasks to the DOM
+        const renderTasks = () => {
+            // Clear the existing list
+            taskList.innerHTML = '';
+            
+            // If no tasks, show the empty state and hide footer
+            if (tasks.length === 0) {
+                 emptyState.classList.remove('hidden');
+                 taskFooter.classList.add('hidden');
+            } else {
+                 emptyState.classList.add('hidden');
+                 taskFooter.classList.remove('hidden');
+            }
+
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.className = 'task-item flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm';
+                
+                // Add a special class for the newest item for animation
+                if (task.isNew) {
+                    li.classList.add('new-task-animation');
+                    delete task.isNew; // Remove the property after applying the animation
+                }
+
+                if (task.completed) {
+                    li.classList.add('completed');
+                }
+
+                // Task text and checkbox container
+                const taskContent = document.createElement('div');
+                taskContent.className = 'flex items-center gap-3';
+                
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.checked = task.completed;
+                checkbox.className = 'h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-gray-300';
+                checkbox.addEventListener('change', () => toggleTask(index));
+
+                const taskText = document.createElement('span');
+                taskText.textContent = task.text;
+                taskText.className = 'task-text';
+
+                taskContent.appendChild(checkbox);
+                taskContent.appendChild(taskText);
+
+                // Delete button
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'text-gray-400 hover:text-red-500 transition-colors';
+                deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                deleteBtn.addEventListener('click', () => deleteTask(index));
+
+                // Assemble the list item
+                li.appendChild(taskContent);
+                li.appendChild(deleteBtn);
+                taskList.appendChild(li);
+            });
+            updateTaskCount();
+        };
+
+        // Function to add a new task
+        const addTask = (text) => {
+            if (text.trim() === '') return;
+
+            tasks.unshift({ text: text, completed: false, isNew: true });
+            saveTasks();
+            renderTasks();
+            taskInput.value = '';
+            taskInput.focus();
+        };
+
+        // Function to toggle a task's completed state
+        const toggleTask = (index) => {
+            tasks[index].completed = !tasks[index].completed;
+            saveTasks();
+            renderTasks();
+        };
+
+        // Function to delete a task
+        const deleteTask = (index) => {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+        };
+
+        // Function to clear all completed tasks
+        const clearCompleted = () => {
+            tasks = tasks.filter(task => !task.completed);
+            saveTasks();
+            renderTasks();
+        };
+        
+        // Function to update the remaining task count
+        const updateTaskCount = () => {
+            const incompleteTasks = tasks.filter(task => !task.completed).length;
+            const taskString = incompleteTasks === 1 ? 'task' : 'tasks';
+            taskCountEl.textContent = `${incompleteTasks} ${taskString} left`;
+        };
+
+
+        // --- Event Listeners ---
+        
+        // Handle form submission
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            addTask(taskInput.value);
+        });
+
+        // Handle "Clear Completed" button click
+        clearCompletedBtn.addEventListener('click', clearCompleted);
+        
+        // --- Initial Render ---
+        renderTasks();
+
+    });
+    </script>
+</body>
+</html>

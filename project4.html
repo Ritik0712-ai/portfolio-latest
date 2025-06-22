@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Name - Computer Science Student</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark blue-gray background */
+            color: #d1d5db; /* Light gray text */
+        }
+
+        /* Typewriter cursor effect */
+        .typewriter h1::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { color: transparent }
+            50% { color: #3b82f6; } /* Blue cursor */
+        }
+        
+        /* Scroll reveal animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navigation -->
+    <header class="bg-gray-900/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="text-2xl font-bold text-white">
+                    <a href="#home">Your Name</a>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#about" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">About</a>
+                    <a href="#projects" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">Projects</a>
+                    <a href="#contact" class="text-gray-300 hover:text-blue-400 transition-colors duration-300">Contact</a>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden text-gray-300 focus:outline-none">
+                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+         <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#about" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">About</a>
+            <a href="#projects" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Projects</a>
+            <a href="#contact" class="block py-2 px-6 text-gray-300 hover:bg-gray-800">Contact</a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6">
+
+        <!-- Section 1: Hero -->
+        <section id="home" class="min-h-screen flex flex-col justify-center items-center text-center">
+            <div class="typewriter">
+                <h1 id="typewriter-text" class="text-4xl md:text-6xl font-extrabold text-white mb-4"></h1>
+            </div>
+            <p class="text-lg md:text-xl text-gray-400 max-w-3xl">
+                A passionate second-year Computer Science student exploring the world of software development, one line of code at a time.
+            </p>
+            <a href="#projects" class="mt-8 px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-transform transform hover:scale-105 duration-300">
+                View My Work
+            </a>
+        </section>
+
+        <!-- Section 2: About Me -->
+        <section id="about" class="py-20 md:py-32 reveal">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-white mb-12">About Me</h2>
+            <div class="flex flex-col md:flex-row items-center gap-12">
+                <div class="md:w-1/3">
+                    <img src="https://placehold.co/400x400/1F2937/FFFFFF?text=Your+Photo" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/400x400/1F2937/FFFFFF?text=Image+Error';"
+                         alt="A portrait of Your Name" class="rounded-full shadow-lg mx-auto">
+                </div>
+                <div class="md:w-2/3 text-lg text-gray-300 space-y-4">
+                    <p>
+                        Hello! I'm [Your Name], a dedicated Computer Science student with a strong foundation in programming principles and a drive to build innovative solutions. I am currently in my second year at [Your University], where I'm honing my skills in data structures, algorithms, and software design.
+                    </p>
+                    <p>
+                        I'm fascinated by both front-end and back-end development and enjoy bringing ideas to life through code. Outside of my coursework, I love working on personal projects, contributing to open-source, and keeping up with the latest tech trends.
+                    </p>
+                    <div class="mt-8">
+                        <h3 class="text-xl font-semibold text-white mb-4">Core Skills:</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="bg-gray-700 text-blue-300 px-4 py-2 rounded-full text-sm font-medium">Java</span>
+                            <span class="bg-gray-700 text-green-300 px-4 py-2 rounded-full text-sm font-medium">Python</span>
+                            <span class="bg-gray-700 text-yellow-300 px-4 py-2 rounded-full text-sm font-medium">JavaScript</span>
+                            <span class="bg-gray-700 text-cyan-300 px-4 py-2 rounded-full text-sm font-medium">HTML & CSS</span>
+                            <span class="bg-gray-700 text-purple-300 px-4 py-2 rounded-full text-sm font-medium">Git & GitHub</span>
+                            <span class="bg-gray-700 text-red-300 px-4 py-2 rounded-full text-sm font-medium">SQL</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Projects -->
+        <section id="projects" class="py-20 md:py-32">
+            <h2 class="text-3xl md:text-4xl font-bold text-center text-white mb-16 reveal">My Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+                <!-- Project 1: Interactive To-Do List -->
+                <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden reveal transition-transform transform hover:-translate-y-2 duration-300">
+                    <img src="https://placehold.co/600x400/1F2937/A78BFA?text=To-Do+List" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=Image+Error';"
+                         alt="Screenshot of a To-Do List Application" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Interactive To-Do List</h3>
+                        <p class="text-gray-400 mb-4">A sleek and responsive to-do list application. Allows users to add, delete, and mark tasks as complete, with data saved in local storage.</p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                           <span class="bg-gray-700 text-sm text-yellow-300 px-3 py-1 rounded-full">JavaScript</span>
+                           <span class="bg-gray-700 text-sm text-blue-300 px-3 py-1 rounded-full">DOM</span>
+                           <span class="bg-gray-700 text-sm text-purple-300 px-3 py-1 rounded-full">Local Storage</span>
+                        </div>
+                        <a href="./todo.html" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-blue-400 hover:text-blue-300 font-semibold">View Project &rarr;</a>
+                    </div>
+                </div>
+
+                <!-- Project 2: Classic Pong Game -->
+                <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden reveal transition-transform transform hover:-translate-y-2 duration-300">
+                    <img src="https://placehold.co/600x400/1F2937/FCA5A5?text=Pong+Game" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=Image+Error';"
+                         alt="Screenshot of Pong Game" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Classic Pong with AI Banter</h3>
+                        <p class="text-gray-400 mb-4">A recreation of the classic arcade game 'Pong' with a modern twist, featuring an AI opponent with Gemini-powered commentary.</p>
+                         <div class="flex flex-wrap gap-2 mb-4">
+                           <span class="bg-gray-700 text-sm text-yellow-300 px-3 py-1 rounded-full">JavaScript</span>
+                           <span class="bg-gray-700 text-sm text-red-300 px-3 py-1 rounded-full">HTML Canvas</span>
+                           <span class="bg-gray-700 text-sm text-purple-400 px-3 py-1 rounded-full">Gemini API</span>
+                        </div>
+                        <a href="./pong.html" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-blue-400 hover:text-blue-300 font-semibold">View Project &rarr;</a>
+                    </div>
+                </div>
+                
+                <!-- Project 3: CS Quiz App -->
+                 <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden reveal transition-transform transform hover:-translate-y-2 duration-300">
+                    <img src="https://placehold.co/600x400/1F2937/6EE7B7?text=Quiz+App" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=Image+Error';"
+                         alt="Screenshot of Quiz App" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">CS Fundamentals Quiz App</h3>
+                        <p class="text-gray-400 mb-4">A fun, interactive quiz to test knowledge of basic computer science concepts. Manages application state and provides instant feedback.</p>
+                         <div class="flex flex-wrap gap-2 mb-4">
+                           <span class="bg-gray-700 text-sm text-yellow-300 px-3 py-1 rounded-full">JavaScript</span>
+                           <span class="bg-gray-700 text-sm text-green-300 px-3 py-1 rounded-full">State Management</span>
+                           <span class="bg-gray-700 text-sm text-cyan-300 px-3 py-1 rounded-full">Tailwind CSS</span>
+                        </div>
+                        <a href="./quiz.html" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-blue-400 hover:text-blue-300 font-semibold">View Project &rarr;</a>
+                    </div>
+                </div>
+                
+                <!-- Project 4: This Portfolio Website -->
+                 <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden reveal transition-transform transform hover:-translate-y-2 duration-300">
+                    <img src="https://placehold.co/600x400/1F2937/34D399?text=Portfolio+Site" 
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/1F2937/FFFFFF?text=Image+Error';"
+                         alt="Screenshot of the portfolio website" class="w-full h-56 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-white mb-2">Personal Portfolio</h3>
+                        <p class="text-gray-400 mb-4">The website you are currently viewing. A clean, modern, and fully responsive showcase of my skills and projects, built with Tailwind CSS.</p>
+                         <div class="flex flex-wrap gap-2 mb-4">
+                           <span class="bg-gray-700 text-sm text-cyan-300 px-3 py-1 rounded-full">Tailwind CSS</span>
+                           <span class="bg-gray-700 text-sm text-yellow-300 px-3 py-1 rounded-full">JavaScript</span>
+                           <span class="bg-gray-700 text-sm text-green-300 px-3 py-1 rounded-full">Responsive Design</span>
+                        </div>
+                        <a href="[YOUR_GITHUB_REPO_LINK]" target="_blank" rel="noopener noreferrer" class="inline-block mt-2 text-blue-400 hover:text-blue-300 font-semibold">View Code &rarr;</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+    
+    <!-- Footer & Contact -->
+    <footer id="contact" class="bg-gray-900 text-gray-400 py-16">
+        <div class="container mx-auto px-6 text-center">
+             <h2 class="text-3xl md:text-4xl font-bold text-center text-white mb-8 reveal">Get In Touch</h2>
+             <p class="max-w-xl mx-auto mb-8 reveal">
+                I'm always open to connecting with new people and exploring opportunities. Feel free to reach out via email or connect with me on social media.
+             </p>
+             <div class="reveal">
+                <a href="mailto:youremail@example.com" class="inline-block mb-8 bg-blue-600 text-white font-semibold rounded-lg px-8 py-3 hover:bg-blue-700 transition-colors duration-300">
+                    Say Hello
+                </a>
+             </div>
+             <div class="flex justify-center space-x-6 reveal">
+                <!-- GitHub Icon -->
+                <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors duration-300">
+                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                </a>
+                <!-- LinkedIn Icon -->
+                <a href="#" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors duration-300">
+                    <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.784-1.75-1.75s.784-1.75 1.75-1.75 1.75.784 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                    </svg>
+                </a>
+             </div>
+             <p class="mt-12 text-sm">&copy; 2024 [Your Name]. All rights reserved.</p>
+        </div>
+    </footer>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- Mobile Menu Toggle ---
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // --- Typewriter Effect ---
+            const typewriterElement = document.getElementById('typewriter-text');
+            const textToType = "Hi, I'm [Your Name].";
+            let index = 0;
+
+            function type() {
+                if (index < textToType.length) {
+                    typewriterElement.textContent += textToType.charAt(index);
+                    index++;
+                    setTimeout(type, 120); // Adjust typing speed here
+                }
+            }
+            type();
+
+            // --- Scroll Reveal Animation ---
+            const revealElements = document.querySelectorAll('.reveal');
+            
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            });
+
+            revealElements.forEach(element => {
+                revealObserver.observe(element);
+            });
+            
+            // --- Smooth scrolling for anchor links ---
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    
+                    if (href && href.length > 1) {
+                        e.preventDefault();
+                        
+                        if (!mobileMenu.classList.contains('hidden')) {
+                             mobileMenu.classList.add('hidden');
+                        }
+
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                             targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+
+        });
+    </script>
+
+</body>
+</html>

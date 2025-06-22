@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classic Pong Game with AI Banter</title>
+    
+    <!-- Tailwind CSS for layout and styling the page around the game -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Press Start 2P for a retro feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #111827; /* Dark Blue-Gray */
+            color: #d1d5db;
+            font-family: 'Press Start 2P', cursive;
+        }
+        /* Style for the game canvas */
+        canvas {
+            background-color: #000;
+            display: block;
+            border-left: 5px solid #d1d5db;
+            border-right: 5px solid #d1d5db;
+        }
+        /* Center the game vertically and horizontally */
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .ai-banter-box {
+            min-height: 5rem;
+            border: 2px dashed #4b5563;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container p-4 w-full">
+        <!-- Scoreboard -->
+        <div class="text-center mb-4 w-full max-w-2xl">
+            <h1 class="text-4xl mb-6 text-white">PONG</h1>
+            <div class="flex justify-around text-3xl">
+                <div>
+                    <span class="text-sm">PLAYER 1</span>
+                    <p id="player-score" class="mt-2">0</p>
+                </div>
+                <div>
+                    <span class="text-sm">COMPUTER</span>
+                    <p id="cpu-score" class="mt-2">0</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Canvas -->
+        <canvas id="pongCanvas" width="800" height="500"></canvas>
+        
+        <!-- Game Messages & AI Banter -->
+        <div class="mt-4 text-center w-full max-w-2xl">
+             <div id="game-message" class="text-xl text-yellow-400 h-8 mb-4"></div>
+             <div id="ai-banter-container" class="hidden">
+                <h2 class="text-sm text-gray-400 mb-2">CPU BANTER</h2>
+                <div id="ai-banter-box" class="ai-banter-box p-3 rounded-lg text-green-400 text-sm flex items-center justify-center">
+                   <p id="ai-banter-text">Let's see what you've got!</p>
+                </div>
+             </div>
+             <button id="toggle-ai-btn" class="mt-4 bg-purple-600 hover:bg-purple-700 text-white text-sm py-2 px-4 rounded-lg transition-colors">
+                ✨ Enable AI Banter
+             </button>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const canvas = document.getElementById('pongCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // DOM Elements
+        const playerScoreEl = document.getElementById('player-score');
+        const cpuScoreEl = document.getElementById('cpu-score');
+        const gameMessageEl = document.getElementById('game-message');
+        const toggleAiBtn = document.getElementById('toggle-ai-btn');
+        const aiBanterContainer = document.getElementById('ai-banter-container');
+        const aiBanterText = document.getElementById('ai-banter-text');
+
+        // Game constants
+        const PADDLE_WIDTH = 15, PADDLE_HEIGHT = 100;
+        const BALL_RADIUS = 10;
+        const WINNING_SCORE = 5;
+
+        // Game state variables
+        let playerScore = 0;
+        let cpuScore = 0;
+        let gameRunning = true;
+        let aiBanterEnabled = false;
+        
+        const keysPressed = {};
+
+        // Player paddle
+        const player = { x: 10, y: canvas.height / 2 - PADDLE_HEIGHT / 2, width: PADDLE_WIDTH, height: PADDLE_HEIGHT, color: '#fff', dy: 8 };
+        // CPU paddle
+        const cpu = { x: canvas.width - PADDLE_WIDTH - 10, y: canvas.height / 2 - PADDLE_HEIGHT / 2, width: PADDLE_WIDTH, height: PADDLE_HEIGHT, color: '#fff', dy: 4 };
+        // Ball
+        const ball = { x: canvas.width / 2, y: canvas.height / 2, radius: BALL_RADIUS, speed: 7, dx: 5, dy: 5, color: '#fff' };
+
+        // --- Gemini API Integration ---
+        const callGeminiAPI = async (prompt) => {
+             if (!aiBanterEnabled) return;
+
+             aiBanterText.textContent = 'CPU is thinking...';
+             const apiKey = ""; // Canvas will provide this
+             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+             
+             try {
+                // FIX: Added generationConfig to the payload to make the request more specific.
+                const payload = { 
+                    contents: [{ role: "user", parts: [{ text: prompt }] }],
+                    generationConfig: {
+                        "temperature": 0.9,
+                        "maxOutputTokens": 50
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    console.error("API Error Body:", errorBody);
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+                
+                const result = await response.json();
+
+                // FIX: Added more robust checking of the API response structure.
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0 &&
+                    result.candidates[0].content.parts[0].text) {
+                    const generatedText = result.candidates[0].content.parts[0].text.replace(/\"/g, ''); // Remove quotes
+                    return generatedText;
+                } else {
+                    console.warn("Unexpected API response structure:", result);
+                    return "...";
+                }
+             } catch (error) {
+                console.error("Gemini API Error:", error);
+                return "I'm speechless."; // Fallback message
+             }
+        };
+
+        const getAIResponse = async (event) => {
+            let prompt = "";
+            switch(event) {
+                case 'PLAYER_SCORED':
+                    prompt = "You are a witty AI playing a game of Pong. The human player just scored a point against you. Write a short, funny, slightly salty comment or excuse (under 12 words).";
+                    break;
+                case 'CPU_SCORED':
+                    prompt = "You are a witty AI playing a game of Pong and you just scored a point against the human player. Write a short, funny, and slightly arrogant taunt (under 12 words).";
+                    break;
+                case 'PLAYER_WINS':
+                     prompt = "You are a witty AI playing a game of Pong and you just lost the whole game to the human. Write a short, funny, final comment acknowledging your defeat, perhaps begrudgingly (under 15 words).";
+                     return callGeminiAPI(prompt); // Return promise for win/loss message
+                case 'CPU_WINS':
+                    prompt = "You are a witty AI playing a game of Pong and you just won the whole game against the human. Write a short, funny, and slightly smug final victory line (under 15 words).";
+                    return callGeminiAPI(prompt); // Return promise for win/loss message
+            }
+            const responseText = await callGeminiAPI(prompt);
+            aiBanterText.textContent = responseText;
+        };
+
+        // --- Drawing Functions ---
+        function drawRect(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(x, y, w, h); }
+        function drawCircle(x, y, r, color) { ctx.fillStyle = color; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2, false); ctx.closePath(); ctx.fill(); }
+        function drawNet() { ctx.setLineDash([10, 15]); ctx.strokeStyle = '#555'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height); ctx.stroke(); ctx.setLineDash([]); }
+        function drawAll() {
+            drawRect(0, 0, canvas.width, canvas.height, '#000');
+            drawNet();
+            drawRect(player.x, player.y, player.width, player.height, player.color);
+            drawRect(cpu.x, cpu.y, cpu.width, cpu.height, cpu.color);
+            drawCircle(ball.x, ball.y, ball.radius, ball.color);
+        }
+
+        // --- Update & Logic Functions ---
+        function movePlayerPaddle() {
+            if ((keysPressed['ArrowUp'] || keysPressed['w']) && player.y > 0) player.y -= player.dy;
+            if ((keysPressed['ArrowDown'] || keysPressed['s']) && player.y < canvas.height - player.height) player.y += player.dy;
+        }
+        function resetBall() {
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.speed = 7;
+            ball.dx *= -1;
+            ball.dy = (Math.random() > 0.5 ? 1 : -1) * 5;
+        }
+        function update() {
+            if (!gameRunning) return;
+            movePlayerPaddle();
+            ball.x += ball.dx;
+            ball.y += ball.dy;
+            if (ball.y + ball.radius > canvas.height || ball.y - ball.radius < 0) ball.dy *= -1;
+            let paddle = (ball.x < canvas.width / 2) ? player : cpu;
+            if (collision(ball, paddle)) {
+                ball.dx *= -1;
+                ball.speed += 0.2;
+                ball.dx = (ball.dx > 0 ? 1 : -1) * ball.speed;
+            }
+            if (ball.x - ball.radius < 0) {
+                cpuScore++;
+                cpuScoreEl.textContent = cpuScore;
+                getAIResponse('CPU_SCORED');
+                resetBall();
+            } else if (ball.x + ball.radius > canvas.width) {
+                playerScore++;
+                playerScoreEl.textContent = playerScore;
+                getAIResponse('PLAYER_SCORED');
+                resetBall();
+            }
+            let targetY = ball.y - cpu.height / 2;
+            cpu.y += (targetY - cpu.y) * 0.08;
+            checkForWinner();
+        }
+        function collision(b, p) {
+            p.top = p.y; p.bottom = p.y + p.height; p.left = p.x; p.right = p.x + p.width;
+            b.top = b.y - b.radius; b.bottom = b.y + b.radius; b.left = b.x - b.radius; b.right = b.x + b.radius;
+            return p.left < b.right && p.top < b.bottom && p.right > b.left && p.bottom > b.top;
+        }
+        async function checkForWinner() {
+            if (playerScore >= WINNING_SCORE) {
+                const winMsg = await getAIResponse('PLAYER_WINS');
+                gameMessageEl.textContent = winMsg || 'YOU WIN! REFRESH TO PLAY.';
+                gameRunning = false;
+            } else if (cpuScore >= WINNING_SCORE) {
+                const loseMsg = await getAIResponse('CPU_WINS');
+                gameMessageEl.textContent = loseMsg || 'GAME OVER. REFRESH TO PLAY.';
+                gameRunning = false;
+            }
+        }
+        
+        function gameLoop() { update(); drawAll(); requestAnimationFrame(gameLoop); }
+
+        // --- Event Listeners ---
+        document.addEventListener('keydown', (e) => { keysPressed[e.key] = true; });
+        document.addEventListener('keyup', (e) => { delete keysPressed[e.key]; });
+        
+        toggleAiBtn.addEventListener('click', () => {
+            aiBanterEnabled = !aiBanterEnabled;
+            if (aiBanterEnabled) {
+                aiBanterContainer.classList.remove('hidden');
+                toggleAiBtn.textContent = '✨ Disable AI Banter';
+                toggleAiBtn.classList.replace('bg-purple-600', 'bg-red-600');
+                toggleAiBtn.classList.replace('hover:bg-purple-700', 'hover:bg-red-700');
+
+            } else {
+                aiBanterContainer.classList.add('hidden');
+                toggleAiBtn.textContent = '✨ Enable AI Banter';
+                toggleAiBtn.classList.replace('bg-red-600', 'bg-purple-600');
+                 toggleAiBtn.classList.replace('hover:bg-red-700', 'hover:bg-purple-700');
+            }
+        });
+
+        // Start the game
+        drawAll();
+        gameMessageEl.textContent = 'First to 5 wins!';
+        setTimeout(() => { if(gameRunning) gameMessageEl.textContent = '' }, 3000);
+        requestAnimationFrame(gameLoop);
+    });
+    </script>
+
+</body>
+</html>
