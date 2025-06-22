@@ -31,12 +31,11 @@ To set up this project locally, follow these steps:
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/](https://github.com/)[YOUR_USERNAME]/[YOUR_REPOSITORY_NAME].git
+
     ```
 2.  **Navigate to the project directory:**
     ```bash
-    cd [YOUR_REPOSITORY_NAME]
-    ```
+
 3.  **File Structure:**
     Ensure all project files are in the same root directory:
     - `index.html` (Main portfolio page)
@@ -53,7 +52,5 @@ To set up this project locally, follow these steps:
 
 -   **Frontend:** HTML5, CSS3, Vanilla JavaScript
 -   **Styling:** [Tailwind CSS](https://tailwindcss.com/)
--   **AI Integration:** [Google Gemini API](https://ai.google.dev/)
--   **Fonts:** [Google Fonts (Inter & Press Start 2P)](https://fonts.google.com/)
 
 ---
